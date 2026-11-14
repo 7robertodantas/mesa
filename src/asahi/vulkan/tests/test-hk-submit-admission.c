@@ -354,14 +354,14 @@ run_rq(bool rq_first)
 
    CHECK(hk_QueueSubmit2(q, 1, &si, VK_NULL_HANDLE) == VK_SUCCESS);
    CHECK(creates == 2 && submits == 1 && queue.drm.id == 42);
-   CHECK(queue.drm.render_rq == rq_first);
+   CHECK(queue.drm.render_rq == (rq_first ? HK_RENDER_RQ_FRAGMENT : 0));
    CHECK(created_layouts[0] == 0 && (created_layouts[1] != 0) == rq_first);
 
    /* A later call that needs the scratch never replaces at admission. */
    cs.gen1_native_fragment_rq = true;
    CHECK(hk_QueueSubmit2(q, 1, &si, VK_NULL_HANDLE) == VK_SUCCESS);
    CHECK(creates == 2 && submits == 2 && queue.drm.id == 42);
-   CHECK(queue.drm.render_rq == rq_first);
+   CHECK(queue.drm.render_rq == (rq_first ? HK_RENDER_RQ_FRAGMENT : 0));
    CHECK(queue.drm.retired_id == UINT32_MAX);
 
    vk_queue_finish(&queue.vk);
